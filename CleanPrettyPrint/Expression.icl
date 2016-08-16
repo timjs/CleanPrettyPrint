@@ -85,6 +85,7 @@ where
 
 printParsedSelections :: CPPState [ParsedSelection] -> String
 printParsedSelections st [PS_Array pe] = print {st & cpp_parens=False} ("[" :+: pe :+: "]")
+printParsedSelections st [PS_Record f NoRecordName] = print st f
 printParsedSelections st _             = "UNKNOWN_PARSEDSELECTION"
 
 instance print Rhs
