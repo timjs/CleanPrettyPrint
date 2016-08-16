@@ -68,8 +68,9 @@ where
 		sel = case psk of
 			ParsedNormalSelector     = "."
 			(ParsedUniqueSelector _) = "!"
+	print st (PE_UpdateComprehension base (PE_Update _ sels new) _ qs) //TODO verify
+		= print st ("{" :+: base :+: " & " :+: printParsedSelections st sels :+: "=" :+: new :+: " \\\\ " :+: join st ", " qs :+: "}")
 	// | PE_ArrayPattern ![ElemAssignment]
-	// | PE_UpdateComprehension !ParsedExpr !ParsedExpr !ParsedExpr ![Qualifier]
 	// | PE_ArrayCompr !ArrayKind !ParsedExpr ![Qualifier]
 	// | PE_Matches !Ident /*expr*/!ParsedExpr /*pattern*/!ParsedExpr !Position
 	// | PE_ABC_Code ![String] !Bool
