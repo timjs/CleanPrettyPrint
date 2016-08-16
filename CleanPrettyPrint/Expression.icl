@@ -58,8 +58,32 @@ where
 		= print st (bind_dst :+: "=:" :+: bind_src)
 	print st PE_WildCard
 		= "_"
+	print st (PE_Update e1 sels e2)
+		= print {st & cpp_parens=False} ("{" :+: e1 :+: " & " :+: printParsedSelections st sels :+: "=" :+: e2 :+: "}")
+	print st (PE_Selection psk pe pes)
+		= print st (pe :+: sel :+: printParsedSelections st pes)
+	where
+		sel = case psk of
+			ParsedNormalSelector     = "."
+			(ParsedUniqueSelector _) = "!"
+	// | PE_ArrayPattern ![ElemAssignment]
+	// | PE_UpdateComprehension !ParsedExpr !ParsedExpr !ParsedExpr ![Qualifier]
+	// | PE_ArrayCompr !ArrayKind !ParsedExpr ![Qualifier]
+	// | PE_Matches !Ident /*expr*/!ParsedExpr /*pattern*/!ParsedExpr !Position
+	// | PE_QualifiedIdent !Ident !String
+	// | PE_ABC_Code ![String] !Bool
+	// | PE_Any_Code !(CodeBinding Ident) !(CodeBinding Ident) ![String]
+	// | PE_DynamicPattern !ParsedExpr !DynamicType
+	// | PE_Dynamic !ParsedExpr !(Optional DynamicType)
+	// | PE_Generic !Ident !TypeKind	/* AA: For generics, kind indexed identifier */
+	// | PE_TypeSignature !ArrayKind !ParsedExpr
+	// | PE_Empty
 	print st pe
 		= abort "UNKNOWN_PE"
+
+printParsedSelections :: CPPState [ParsedSelection] -> String
+printParsedSelections st [PS_Array pe] = print {st & cpp_parens=False} ("[" :+: pe :+: "]")
+printParsedSelections st _             = "UNKNOWN_PARSEDSELECTION"
 
 instance print Rhs
 where
