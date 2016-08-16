@@ -152,7 +152,7 @@ where
 		lookup "_#Array"           = Yes ("{#" :+: join st " " ats :+:  "}")
 		lookup "_!Array"           = Yes ("{!" :+: join st " " ats :+:  "}")
 		lookup name
-		| name % (0,5) == "_Tuple" = Yes ("(" :+: join st "," ats :+: ")")
+		| name % (0,5) == "_Tuple" = Yes ("(" :+: join st "," [if s "!" "" :+: a \\ a <- ats & s <- strict] :+: ")")
 		lookup _                   = No
 
 // Type contexts
