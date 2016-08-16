@@ -77,9 +77,10 @@ where
 instance print SymbolType
 where
 	print st t
-		= print st (if (isEmpty t.st_args) PrintNil (args` :+: " -> ") :+: t.st_result :+: st_context`)
+		= print st (if (isEmpty t.st_args) PrintNil (args` :+: " -> ") :+: t.st_result :+: st_context` :+: st_env`)
 	where
 		st_context` = if (isEmpty t.st_context) PrintNil (" | " :+: join st " & " t.st_context)
+		st_env` = if (isEmpty t.st_attr_env) PrintNil (", [" :+: join st ", " t.st_attr_env :+: "]")
 		args` = join st " " [if s "!" "" :+: a \\ a <- t.st_args & s <- strictnessListToBools t.st_args_strictness]
 
 strictnessListToBools :: StrictnessList -> [Bool]
@@ -185,6 +186,14 @@ instance print ParsedConstructor
 where
 	print st cons = print st (cons.pc_cons_ident :+: " " :+: cons.pc_arg_types)
 
+// Classes
+instance print TCClass
+where
+	print st (TCClass {glob_object={ds_ident}})
+		= print st ds_ident
+	print st _
+		= abort "UNKNOWN_TCCLASS"
+
 // Generics
 instance print GenericCaseDef
 where
@@ -193,13 +202,10 @@ where
 	print _ _
 		= abort "UNKNOWN_GENERICCASEDEF"
 
-// Classes
-instance print TCClass
+// Uniqueness
+instance print AttrInequality
 where
-	print st (TCClass {glob_object={ds_ident}})
-		= print st ds_ident
-	print st _
-		= abort "UNKNOWN_TCCLASS"
+	print st ai = print st (ai.ai_offered.av_ident :+: "<=" :+: ai.ai_demanded.av_ident)
 
 // Miscellaneous
 instance print TypeSymbIdent where print st tsi = print st tsi.type_ident
