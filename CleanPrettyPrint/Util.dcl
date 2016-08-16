@@ -18,14 +18,15 @@ class print t where
 	printp :: CPPState t -> String | print t
 	printp st x :== if st.cpp_parens ("(" +++ print st x +++ ")") (print {st & cpp_parens=True} x)
 
-class join e where
+class Join e where
 	join :: CPPState t e -> String | print t
+	isNil :: e -> Bool
 
 	join_start :: CPPState t e -> String | print t
-	join_start st glue elems :== if (isEmpty elems) "" (print st glue) +++ join st glue elems
+	join_start st glue elems :== if (isNil elems) "" (print st glue) +++ join st glue elems
 
 instance zero CPPState
 
 instance print String, Int, [t] | print t, CPPState, PrintList
 
-instance join [u] | print u
+instance Join [u] | print u

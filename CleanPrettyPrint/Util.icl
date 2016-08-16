@@ -18,8 +18,11 @@ where
 	print _ PrintNil   = ""
 	print st (a :+: b) = print st a +++ print st b
 
-instance join [u] | print u
+instance Join [u] | print u
 where
 	join _  _    []     = ""
 	join st _    [e]    = print st e
 	join st glue [e:es] = print st e +++ print st glue +++ join st glue es
+
+	isNil [] = True
+	isNil _  = False

@@ -153,14 +153,24 @@ where
 	print st ca = print st (ca.calt_pattern :+: " = " :+: ca.calt_rhs)
 
 // Local definitions
-instance join LocalDefs
+instance Join LocalDefs
 where
 	join st glue (LocalParsedDefs lds) = join st glue lds
 	join st glue _                     = abort "JOIN: UNKNOWN_LOCALDEFS"
 
+	isNil (LocalParsedDefs []) = True
+	isNil (LocalParsedDefs _)  = False
+	isNil _                    = abort "JOIN: UNKNOWN_LOCALDEFS"
+
 instance print ExprWithLocalDefs
 where
-	print st {ewl_expr} = print st ewl_expr
+	print st {ewl_expr,ewl_locals=LocalParsedDefs []}
+		= print st ewl_expr
+	print st {ewl_expr,ewl_locals}
+		= print st (ewl_expr :+: "\n" :+: st` :+: "with" :+: join_start st`` ("\n" :+: st``) ewl_locals)
+	where
+		st`  = {st & cpp_indent = st.cpp_indent + 1}
+		st`` = {st & cpp_indent = st.cpp_indent + 2}
 
 // Guards
 instance print OptGuardedAlts
