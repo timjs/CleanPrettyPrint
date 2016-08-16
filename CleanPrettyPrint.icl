@@ -9,4 +9,8 @@ import CleanPrettyPrint.Common
 import CleanPrettyPrint.Expression
 import CleanPrettyPrint.Definition
 
-instance cpp ParsedDefinition where cpp pd = print zero pd
+instance cpp ParsedDefinition where cpp x = print zero x
+instance cpp ParsedExpr       where cpp x = print zero x
+instance cpp Rhs              where cpp x = print zero x
+instance cpp Type             where cpp x = print zero x
+instance cpp TypeContext      where cpp x = print zero x
