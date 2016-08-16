@@ -57,7 +57,7 @@ where
 	print st (PE_Let lds pe)
 		= printp st ("let " :+: join st ", " lds :+: " in " :+: pe)
 	print st (PE_Bound {bind_src,bind_dst})
-		= print st (bind_dst :+: "=:" :+: bind_src)
+		= print {st & cpp_parens=True} (bind_dst :+: "=:" :+: bind_src)
 	print st PE_WildCard
 		= "_"
 	print st (PE_Update e1 sels e2)
@@ -143,6 +143,7 @@ where
 // Records
 instance print FieldAssignment
 where
+	print st {bind_src=PE_Empty,bind_dst} = print st bind_dst
 	print st {bind_src,bind_dst} = print st (bind_dst :+: "=" :+: bind_src)
 
 instance print FieldNameOrQualifiedFieldName
