@@ -166,15 +166,15 @@ where
 instance print OptGuardedAlts
 where
 	print st (GuardedAlts ges (Yes othe))
-		= print st ("\n" :+: st :+: "| " :+: join st ("\n" :+: st :+: "| ") ges :+: "\n" :+: st :+: "| otherwise = " :+: othe)
+		= print st (join_start st ("\n" :+: st :+: "| ") ges :+: "\n" :+: st :+: "| otherwise = " :+: othe)
 	print st (GuardedAlts ges No)
-		= join st ("\n" :+: st :+: "| ") ges
+		= join_start st ("\n" :+: st :+: "| ") ges
 	print st (UnGuardedExpr e)
 		= print st e
 
 instance print GuardedExpr
 where
 	print st {alt_guard,alt_expr}
-		= print {st & cpp_indent = st.cpp_indent + 1} alt_guard +++ if show_eq " = " "" +++ print st alt_expr
+		= print {st & cpp_indent = st.cpp_indent + 1} alt_guard +++ eq +++ print st alt_expr
 	where
-		show_eq = case alt_expr of (GuardedAlts _ _) = False; _ = True
+		eq = case alt_expr of (GuardedAlts _ _) = ""; _ = " = "
