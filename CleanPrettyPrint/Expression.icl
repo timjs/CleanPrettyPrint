@@ -24,6 +24,8 @@ where
 		= printp st pes
 	print st (PE_Ident id)
 		= print st id
+	print st (PE_QualifiedIdent id s)
+		= print st ("'" :+: id :+: "'." :+: s)
 	print st (PE_Basic b)
 		= print st b
 	print st (PE_Tuple pes)
@@ -70,7 +72,6 @@ where
 	// | PE_UpdateComprehension !ParsedExpr !ParsedExpr !ParsedExpr ![Qualifier]
 	// | PE_ArrayCompr !ArrayKind !ParsedExpr ![Qualifier]
 	// | PE_Matches !Ident /*expr*/!ParsedExpr /*pattern*/!ParsedExpr !Position
-	// | PE_QualifiedIdent !Ident !String
 	// | PE_ABC_Code ![String] !Bool
 	// | PE_Any_Code !(CodeBinding Ident) !(CodeBinding Ident) ![String]
 	// | PE_DynamicPattern !ParsedExpr !DynamicType
