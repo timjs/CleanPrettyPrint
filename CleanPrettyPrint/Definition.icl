@@ -110,7 +110,8 @@ where
 	//	= "GTV"
 	print st (TV tv)
 		= print st tv
-	//|	TFAC ![ATypeVar] !Type ![TypeContext]	// Universally quantified function argument type with contexts
+	print st (TFAC atvs t tc)
+		= print st ("(A." :+: join st " " atvs :+: ": " :+: t :+: " | " :+: join st " & " tc :+: ")")
 	//|	TQualifiedIdent !Ident !String ![AType]
 	//|	TGenericFunctionInDictionary !(Global DefinedSymbol) !TypeKind !GlobalIndex /*GenericDict*/
 	//|	TE
@@ -199,6 +200,8 @@ instance print GenericCaseDef
 where
 	print st {gc_type,gc_gcf=GCF id _}
 		= print st (id :+: " " :+: gc_type)
+	print st {gc_type,gc_gcf=GCFC id _}
+		= print st ("class " :+: id :+: " " :+: gc_type)
 	print _ _
 		= abort "UNKNOWN_GENERICCASEDEF"
 
