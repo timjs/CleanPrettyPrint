@@ -98,8 +98,8 @@ where
 		= print st ("(" :+: at1 :+: " -> " :+: at2 :+: ")")
 	print st TArrow
 		= "(->)"
-	//print st (TArrow1 at)
-	//	= print st ("((->) " :+: at :+: ")")
+	print st (TArrow1 at)
+		= print st ("((->) " :+: at :+: ")")
 	print st (cv :@: ats)
 		= print st ("(" :+: cv :+: " " :+: join st " " ats :+: ")")
 	print st (TB bt)
