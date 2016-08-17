@@ -112,7 +112,10 @@ where
 		= print st tv
 	print st (TFAC atvs t tc)
 		= print st ("(A." :+: join st " " atvs :+: ": " :+: t :+: " | " :+: join st " & " tc :+: ")")
-	//|	TQualifiedIdent !Ident !String ![AType]
+	print st (TQualifiedIdent id s [])
+		= print st ("'" :+: id :+: "'." :+: s)
+	print st (TQualifiedIdent id s ats)
+		= print st ("('" :+: id :+: "'." :+: s :+: join_start st " " ats :+: ")")
 	//|	TGenericFunctionInDictionary !(Global DefinedSymbol) !TypeKind !GlobalIndex /*GenericDict*/
 	//|	TE
 	print st _

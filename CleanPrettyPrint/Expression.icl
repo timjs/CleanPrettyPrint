@@ -41,7 +41,7 @@ where
 		name` = case name of
 			NoRecordName         = ""
 			(RecordNameIdent id) = print st id +++ " | "
-			_                    = abort "UNKNOWN_OPTIONALRECORDNAME"
+			(RecordNameQualifiedIdent mod s) = print st ("'" :+: mod :+: "'." :+: s) +++ " | "
 	print st (PE_ListCompr cons nil pe qs)
 		= print st ("[" :+: pe :+: " \\\\ " :+: join st ", " qs :+: "]")
 	print st (PE_If _ c i e)
@@ -149,7 +149,7 @@ where
 instance print FieldNameOrQualifiedFieldName
 where
 	print st (FieldName id)             = print st id
-	print st (QualifiedFieldName mod s) = abort "UNKNOWN_QUALIFIEDFIELDNAME"
+	print st (QualifiedFieldName mod s) = print st ("'" :+: mod :+: "'." :+: s)
 
 // Case .. of
 instance print CaseAlt
