@@ -50,7 +50,7 @@ where
 		= print st (id` :+: join_start st " " args :+: if show_eq eq "" :+: rhs)
 	where
 		id` = if isinfix ("(" :+: id :+: ")") (id :+: PrintNil)
-		show_eq = case rhs.rhs_alts of (GuardedAlts _ _) = False; _ = True
+		show_eq = not (compound_rhs rhs.rhs_alts)
 		eq = case fk of FK_Macro = " :== "; _ = " = "
 	print st (PD_Type {td_ident,td_args,td_attribute,td_rhs})
 		= print st (":: " :+: td_attribute :+: td_ident :+: join_start st " " td_args :+: equals :+: td_rhs)

@@ -168,13 +168,22 @@ where
 
 instance print ExprWithLocalDefs
 where
-	print st {ewl_expr,ewl_locals=LocalParsedDefs []}
+	print st {ewl_expr,ewl_nodes=[],ewl_locals=LocalParsedDefs []}
 		= print st ewl_expr
+	print st {ewl_expr,ewl_nodes,ewl_locals=LocalParsedDefs []}
+		= print st (join_start st` ("\n" :+: st`) ewl_nodes :+: "\n" :+: st` :+: "= " :+: ewl_expr)
+	where
+		st`  = {st & cpp_indent = st.cpp_indent + 1}
 	print st {ewl_expr,ewl_locals}
 		= print st (ewl_expr :+: "\n" :+: st` :+: "with" :+: join_start st`` ("\n" :+: st``) ewl_locals)
 	where
 		st`  = {st & cpp_indent = st.cpp_indent + 1}
 		st`` = {st & cpp_indent = st.cpp_indent + 2}
+
+instance print NodeDefWithLocals
+where
+	print st {ndwl_strict,ndwl_def={bind_src,bind_dst},ndwl_locals}
+		= print st (if ndwl_strict "#! " "# " :+: bind_dst :+: " = " :+: bind_src)
 
 // Guards
 instance print OptGuardedAlts
@@ -191,4 +200,9 @@ where
 	print st {alt_guard,alt_expr}
 		= print {st & cpp_indent = st.cpp_indent + 1} alt_guard +++ eq +++ print st alt_expr
 	where
-		eq = case alt_expr of (GuardedAlts _ _) = ""; _ = " = "
+		eq = if (compound_rhs alt_expr) "" " = "
+
+compound_rhs :: OptGuardedAlts -> Bool
+compound_rhs (GuardedAlts _ _)                 = True
+compound_rhs (UnGuardedExpr {ewl_nodes=[_:_]}) = True
+compound_rhs _                                 = False
