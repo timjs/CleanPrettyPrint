@@ -70,13 +70,22 @@ where
 			(ParsedUniqueSelector _) = "!"
 	print st (PE_UpdateComprehension base (PE_Update _ sels new) _ qs) //TODO verify
 		= print st ("{" :+: base :+: " & " :+: printParsedSelections st sels :+: "=" :+: new :+: " \\\\ " :+: join st ", " qs :+: "}")
+	print st (PE_ArrayCompr ak pe qs)
+		= print st ("{" :+: ak :+: pe :+: " \\\\ " :+: join st ", " qs :+: "}")
+	print st (PE_ABC_Code lines inline)
+		= print st ("code " :+: if inline "inline " "" :+: "{" :+:
+			join_start st` ("\n" :+: st`) lines :+: "\n" :+: st :+: "}")
+	where
+		st` = {st & cpp_indent = st.cpp_indent + 1}
+	print st (PE_DynamicPattern pe dt)
+		= print st ("(" :+: pe :+: " :: " :+: dt :+: ")")
+	print st (PE_Dynamic pe (Yes dt))
+		= printp st ("dynamic " :+: pe :+: " :: " :+: dt)
+	print st (PE_Dynamic pe No)
+		= printp st ("dynamic " :+: pe)
 	// | PE_ArrayPattern ![ElemAssignment]
-	// | PE_ArrayCompr !ArrayKind !ParsedExpr ![Qualifier]
 	// | PE_Matches !Ident /*expr*/!ParsedExpr /*pattern*/!ParsedExpr !Position
-	// | PE_ABC_Code ![String] !Bool
 	// | PE_Any_Code !(CodeBinding Ident) !(CodeBinding Ident) ![String]
-	// | PE_DynamicPattern !ParsedExpr !DynamicType
-	// | PE_Dynamic !ParsedExpr !(Optional DynamicType)
 	// | PE_Generic !Ident !TypeKind	/* AA: For generics, kind indexed identifier */
 	// | PE_TypeSignature !ArrayKind !ParsedExpr
 	// | PE_Empty
@@ -206,3 +215,16 @@ compound_rhs :: OptGuardedAlts -> Bool
 compound_rhs (GuardedAlts _ _)                 = True
 compound_rhs (UnGuardedExpr {ewl_nodes=[_:_]}) = True
 compound_rhs _                                 = False
+
+// Dynamics
+instance print DynamicType
+where
+	print st {dt_uni_vars,dt_type,dt_contexts}
+		= print st (uni_vars :+: dt_type :+: context)
+	where
+		uni_vars = case dt_uni_vars of
+			[] = PrintNil
+			vs = "A." :+: join st " " vs :+: ": "
+		context = case dt_contexts of
+			[] = PrintNil
+			cs = " | " :+: join st " & " cs

@@ -106,8 +106,8 @@ where
 		= print st bt
 	//print st (TFA atvs type)
 	//	= "TFA"
-	//print st (GTV tv)
-	//	= "GTV"
+	print st (GTV tv)
+		= print st (tv :+: "^")
 	print st (TV tv)
 		= print st tv
 	print st (TFAC atvs t tc)
