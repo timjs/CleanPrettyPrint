@@ -127,6 +127,8 @@ instance print TypeVar where print st {tv_ident} = tv_ident.id_name
 
 instance print AType
 where
+	print st {at_attribute=TA_Var {av_ident},at_type=TV {tv_ident}}
+	| av_ident.id_name == tv_ident.id_name = "." +++ tv_ident.id_name
 	print st at = print st (at.at_attribute :+: at.at_type)
 
 instance print ATypeVar
@@ -195,6 +197,8 @@ instance print TCClass
 where
 	print st (TCClass {glob_object={ds_ident}})
 		= print st ds_ident
+	print st (TCGeneric {gtc_generic,gtc_kind})
+		= print st (gtc_generic.glob_object.ds_ident.id_name :+: "{|" :+: gtc_kind :+: "|}")
 	print st _
 		= abort "UNKNOWN_TCCLASS"
 
@@ -207,6 +211,11 @@ where
 		= print st ("class " :+: id :+: " " :+: gc_type)
 	print _ _
 		= abort "UNKNOWN_GENERICCASEDEF"
+
+instance print TypeKind
+where
+	print st KindConst = print st "*"
+	print st (KindArrow ks) = print st ("*->" :+: ks)
 
 // Uniqueness
 instance print AttrInequality
