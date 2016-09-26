@@ -148,6 +148,7 @@ where
 		)
 	where
 		lookup "_String"           = Yes ("String" :+: PrintNil)
+		lookup "_Unit"             = Yes ("()" :+: PrintNil)
 		lookup "_List"             = Yes ("["  :+: join st " " ats :+:  "]")
 		lookup "_!List"            = Yes ("[!" :+: join st " " ats :+:  "]")
 		lookup "_List!"            = Yes ("["  :+: join st " " ats :+: "!]")
